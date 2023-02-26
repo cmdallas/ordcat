@@ -3,12 +3,38 @@
 
 IFS=$' \t\r\n'
 
-# Dependencies: imgcat
+# Dependencies: imgcat, jq, yq
 function checkDependencies {
+  local missingDependencies=()
+
   if ! which imgcat > /dev/null; then
     echo "Missing dependency: imgcat"
     echo "Install it by running the following command:"
     echo "curl -L https://iterm2.com/misc/install_shell_integration_and_utilities.sh | bash"
+    printf "\n"
+    missingDependencies+=("imgcat")
+  fi
+
+  if ! which jq > /dev/null; then
+    echo "Missing dependency: jq"
+    echo "Install it by running the following command:"
+    echo "brew install jq"
+    printf "\n"
+    missingDependencies+=("jq")
+  fi
+
+  if ! which yq > /dev/null; then
+    echo "Missing dependency: yq"
+    echo "Install it by running the following command:"
+    echo "brew install yq"
+    printf "\n"
+    missingDependencies+=("yq")
+  fi
+
+  local numOfMissingDependencies=${#missingDependencies[@]}
+  if [[ numOfMissingDependencies -gt 0 ]]; then
+    printf "\n"
+    echo "Missing dependencies: " "${missingDependencies[@]}"
     exit 1
   fi
 }
@@ -28,22 +54,6 @@ function setTerminalBoldOutput {
   fi
 }
 
-# Get text inscriptions
-#
-# @Param $1 [String] contentUrl
-# @Param $2 [String] acceptedMediaTypes
-function getText {
-  local contentUrl=$1
-  local acceptedMediaTypes=$2
-
-  setTerminalBoldOutput "true"
-  curl -s \
-    -X GET \
-    -H "Accept: ${acceptedMediaTypes}" \
-    "${contentUrl}"
-  setTerminalBoldOutput "false"
-}
-
 # Get image inscriptions
 #
 # @Param $1 [String] contentUrl
@@ -58,6 +68,51 @@ function getImage {
     "$contentUrl" | imgcat
 }
 
+# Get json inscriptions
+#
+# @Param $1 [String] contentUrl
+# @Param $2 [String] acceptedMediaTypes
+function getJson {
+  local contentUrl=$1
+  local acceptedMediaTypes=$2
+
+  curl -s \
+    -X GET \
+    -H "Accept: ${acceptedMediaTypes}" \
+    "$contentUrl" | jq
+}
+
+# Get text inscriptions
+#
+# @Param $1 [String] contentUrl
+# @Param $2 [String] acceptedMediaTypes
+function getText {
+  local contentUrl=$1
+  local acceptedMediaTypes=$2
+
+  setTerminalBoldOutput "true"
+  curl -s \
+    -X GET \
+    -H "Accept: ${acceptedMediaTypes}" \
+    "${contentUrl}"
+  setTerminalBoldOutput "false"
+  printf "\n"
+}
+
+# Get yaml inscriptions
+#
+# @Param $1 [String] contentUrl
+# @Param $2 [String] acceptedMediaTypes
+function getYaml {
+  local contentUrl=$1
+  local acceptedMediaTypes=$2
+
+  curl -s \
+    -X GET \
+    -H "Accept: ${acceptedMediaTypes}" \
+    "$contentUrl" | yq
+}
+
 # HEAD the content url to discover the content type
 #
 # @Param $1 [String] contentUrl
@@ -68,12 +123,14 @@ function getContentType {
 }
 
 # Accept output from `ord wallet inscriptions` and display them in iTerm2
-# Current supported types: image, text.
+# Current supported types: image, json, text.
 function main() {
   local inscriptionPrefix="https://ordinals.com/inscription/"
   # Ord supported content types: https://github.com/casey/ord/blob/master/src/media.rs
   local imageMediaTypes="image/apng,image/avif,image,image/gif,image/jpeg,image/png,image/svg+xml,image/webp"
+  local jsonMediaType="application/json"
   local textMediaTypes="text/html;charset=utf-8,text/plain;charset=utf-8"
+  local yamlMediaType="application/yaml"
 
   while IFS= read -r -a walletInscriptionsOutput; do
     for line in "${walletInscriptionsOutput[@]}"; do
@@ -87,6 +144,12 @@ function main() {
           getImage "$contentUrl" "$imageMediaTypes"
         elif [[ $textMediaTypes =~ $contentType ]]; then 
           getText "$contentUrl" "$textMediaTypes"
+        elif [[ $jsonMediaType =~ $contentType ]]; then
+          getJson "$contentUrl" "$jsonMediaType"
+        elif [[ $yamlMediaType =~ $contentType ]]; then
+          getYaml "$contentUrl" "$jsonMediaType"
+        else
+          echo "Content type: ""$contentType"" not supported"
         fi
 
         echo "$inscriptionUrl" && printf "\n"
