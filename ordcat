@@ -2,22 +2,37 @@
 
 IFS=$' \t\r\n'
 
-INSCRIPTION_PREFIX="https://ordinals.com/inscription/"
+# imgcat
+function check_dependencies() {
+  if ! which imgcat > /dev/null; then
+    echo "Missing dependency: imgcat"
+    echo "Install it by running the following command:"
+    echo "curl -L https://iterm2.com/misc/install_shell_integration_and_utilities.sh | bash"
+    exit 1
+  fi
+}
 
-if ! which imgcat > /dev/null; then
-  echo "Missing dependency: imgcat"
-  echo "Install it by running the following command:"
-  echo "curl -L https://iterm2.com/misc/install_shell_integration_and_utilities.sh | bash"
-  exit 1
-fi
+# Ord supported content types: https://github.com/casey/ord/blob/master/src/media.rs
+# TODO(cmdallas): Make a HEAD request and peek at the content type before fetching.
+#   This way non `image/*` types can be handled as well.
+function main() {
+  ACCEPTED_MEDIA="image/apng,image/avif,image,image/gif,image/jpeg,image/png,image/svg+xml,image/webp"
+  INSCRIPTION_PREFIX="https://ordinals.com/inscription/"
 
-while IFS= read -r -a walletInscriptionsOutput; do
-  for line in "${walletInscriptionsOutput[@]}"; do
-    if [[ $line == *"$INSCRIPTION_PREFIX"* ]]; then
-      inscriptionUrl=$(echo "$line" | awk '{print $2}')
-      contentUrl=$(echo -e "$inscriptionUrl" | sed 's/inscription/content/' | tr -d '"')
-      curl -s "$contentUrl" | imgcat
-      echo "$inscriptionUrl" && printf "\n"
-    fi
+  while IFS= read -r -a walletInscriptionsOutput; do
+    for line in "${walletInscriptionsOutput[@]}"; do
+      if [[ $line == *"$INSCRIPTION_PREFIX"* ]]; then
+        inscriptionUrl=$(echo "$line" | awk '{print $2}')
+        contentUrl=$(echo -e "$inscriptionUrl" | sed 's/inscription/content/' | tr -d '"')
+        curl -s \
+          -X GET \
+          -H "Accept: ${ACCEPTED_MEDIA}" \
+          "$contentUrl" | imgcat
+        echo "$inscriptionUrl" && printf "\n"
+      fi
+    done
   done
-done
+}
+
+check_dependencies
+main

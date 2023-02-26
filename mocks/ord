@@ -10,5 +10,10 @@ echo '[
     "inscription": "4659f2de471499c58435dda800c612abae1ff37db97ad5928dc9871b140c3e1ci0",
     "location": "ae308cc390c00a7e089a891509b70949c1615125b03b2dbf3c4029c37091bd14:0:0",
     "explorer": "https://ordinals.com/inscription/4659f2de471499c58435dda800c612abae1ff37db97ad5928dc9871b140c3e1ci0"
+  },
+  {
+    "inscription": "b756d56d15e66db84d96ce2fa3ba9799c0ec45e7564e8421e8b895dddf7f13c9i0",
+    "location": "b756d56d15e66db84d96ce2fa3ba9799c0ec45e7564e8421e8b895dddf7f13c9:0:0",
+    "explorer": "https://ordinals.com/inscription/b756d56d15e66db84d96ce2fa3ba9799c0ec45e7564e8421e8b895dddf7f13c9i0"
   }
 ]'
