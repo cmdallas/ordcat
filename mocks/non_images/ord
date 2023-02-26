@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+echo '[
+  {
+    "inscription": "bee6bc0b27ca6189b98e6840fc36a4e7fafdc418ca092b0944f20d12380416a4i0",
+    "location": "bee6bc0b27ca6189b98e6840fc36a4e7fafdc418ca092b0944f20d12380416a4i0:0:0",
+    "explorer": "https://ordinals.com/inscription/bee6bc0b27ca6189b98e6840fc36a4e7fafdc418ca092b0944f20d12380416a4i0"
+  },
+  {
+    "inscription": "5c57fcdd1c63ec8a2b619d636d1043ea7cce8fb8e4a89ceee9e8e1cd84f64140i0",
+    "location": "5c57fcdd1c63ec8a2b619d636d1043ea7cce8fb8e4a89ceee9e8e1cd84f64140i0:0:0",
+    "explorer": "https://ordinals.com/inscription/5c57fcdd1c63ec8a2b619d636d1043ea7cce8fb8e4a89ceee9e8e1cd84f64140i0"
+  },
+  {
+    "inscription": "3f1ce941d1c5868a105dff0565374b6cecadd5b98db5b0b0934e1af515f2e1f0i0",
+    "location": "3f1ce941d1c5868a105dff0565374b6cecadd5b98db5b0b0934e1af515f2e1f0i0:0:0",
+    "explorer": "https://ordinals.com/inscription/3f1ce941d1c5868a105dff0565374b6cecadd5b98db5b0b0934e1af515f2e1f0i0"
+  }
+]'

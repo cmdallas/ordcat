@@ -159,4 +159,5 @@ function main() {
 }
 
 checkDependencies
+printf "\n"
 main

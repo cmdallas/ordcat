@@ -10,10 +10,16 @@ A command line viewer for digital artifacts on Bitcoin.
 curl -L https://raw.githubusercontent.com/cmdallas/ordcat/main/install.sh | bash
 ```
 
-# Usage
+# Examples
 
 ```bash
 ord wallet inscriptions | ordcat
 ```
 
-![](/assets/example.png)
+## Images
+
+![images](/assets/images.gif)
+
+## Text, JSON, & YAML
+
+![non images](/assets/non_images.gif)
