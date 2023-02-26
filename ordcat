@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2155
 
 IFS=$' \t\r\n'
 
-# imgcat
-function check_dependencies() {
+# Dependencies: imgcat
+function checkDependencies {
   if ! which imgcat > /dev/null; then
     echo "Missing dependency: imgcat"
     echo "Install it by running the following command:"
@@ -12,27 +13,87 @@ function check_dependencies() {
   fi
 }
 
-# Ord supported content types: https://github.com/casey/ord/blob/master/src/media.rs
-# TODO(cmdallas): Make a HEAD request and peek at the content type before fetching.
-#   This way non `image/*` types can be handled as well.
+# Make terminal output bold if `tput` is installed
+#
+# @Param $1 [Boolean] isEnabled "true" of "false"
+function setTerminalBoldOutput {
+  local isEnabled=$1
+
+  if which tput > /dev/null; then
+    if [[ $isEnabled == "true" ]]; then
+      tput bold
+    elif [[ $isEnabled == "false" ]]; then
+      tput sgr0
+    fi
+  fi
+}
+
+# Get text inscriptions
+#
+# @Param $1 [String] contentUrl
+# @Param $2 [String] acceptedMediaTypes
+function getText {
+  local contentUrl=$1
+  local acceptedMediaTypes=$2
+
+  setTerminalBoldOutput "true"
+  curl -s \
+    -X GET \
+    -H "Accept: ${acceptedMediaTypes}" \
+    "${contentUrl}"
+  setTerminalBoldOutput "false"
+}
+
+# Get image inscriptions
+#
+# @Param $1 [String] contentUrl
+# @Param $2 [String] acceptedMediaTypes
+function getImage {
+  local contentUrl=$1
+  local acceptedMediaTypes=$2
+
+  curl -s \
+    -X GET \
+    -H "Accept: ${acceptedMediaTypes}" \
+    "$contentUrl" | imgcat
+}
+
+# HEAD the content url to discover the content type
+#
+# @Param $1 [String] contentUrl
+function getContentType {
+  local contentUrl=$1
+
+  curl -s --head "$contentUrl" | grep -i "content-type:" | cut -d ":" -f 2 | tr -d '[:space:]'
+}
+
+# Accept output from `ord wallet inscriptions` and display them in iTerm2
+# Current supported types: image, text.
 function main() {
-  ACCEPTED_MEDIA="image/apng,image/avif,image,image/gif,image/jpeg,image/png,image/svg+xml,image/webp"
-  INSCRIPTION_PREFIX="https://ordinals.com/inscription/"
+  local inscriptionPrefix="https://ordinals.com/inscription/"
+  # Ord supported content types: https://github.com/casey/ord/blob/master/src/media.rs
+  local imageMediaTypes="image/apng,image/avif,image,image/gif,image/jpeg,image/png,image/svg+xml,image/webp"
+  local textMediaTypes="text/html;charset=utf-8,text/plain;charset=utf-8"
 
   while IFS= read -r -a walletInscriptionsOutput; do
     for line in "${walletInscriptionsOutput[@]}"; do
-      if [[ $line == *"$INSCRIPTION_PREFIX"* ]]; then
-        inscriptionUrl=$(echo "$line" | awk '{print $2}')
-        contentUrl=$(echo -e "$inscriptionUrl" | sed 's/inscription/content/' | tr -d '"')
-        curl -s \
-          -X GET \
-          -H "Accept: ${ACCEPTED_MEDIA}" \
-          "$contentUrl" | imgcat
+      if [[ $line == *"$inscriptionPrefix"* ]]; then
+
+        local inscriptionUrl=$(echo "$line" | awk '{print $2}')
+        local contentUrl=$(echo -e "$inscriptionUrl" | sed 's/inscription/content/' | tr -d '"')
+        local contentType=$(getContentType "$contentUrl")
+
+        if [[ $imageMediaTypes =~ $contentType ]]; then
+          getImage "$contentUrl" "$imageMediaTypes"
+        elif [[ $textMediaTypes =~ $contentType ]]; then 
+          getText "$contentUrl" "$textMediaTypes"
+        fi
+
         echo "$inscriptionUrl" && printf "\n"
       fi
     done
   done
 }
 
-check_dependencies
+checkDependencies
 main
