@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+echo '[
+  {
+    "inscription": "1587878dfd7d470c88f353f61260bf33bf53802e7185403507d6e048bf56470ci0",
+    "location": "da4d342af69e42c651abf55fed749ed1cbd062865ac9d6fbe7ef59f3ab0271c1:0:0",
+    "explorer": "https://ordinals.com/inscription/1587878dfd7d470c88f353f61260bf33bf53802e7185403507d6e048bf56470ci0"
+  },
+  {
+    "inscription": "4659f2de471499c58435dda800c612abae1ff37db97ad5928dc9871b140c3e1ci0",
+    "location": "ae308cc390c00a7e089a891509b70949c1615125b03b2dbf3c4029c37091bd14:0:0",
+    "explorer": "https://ordinals.com/inscription/4659f2de471499c58435dda800c612abae1ff37db97ad5928dc9871b140c3e1ci0"
+  }
+]'

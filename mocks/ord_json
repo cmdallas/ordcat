@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+echo '[
+  {
+    "inscription": "5c57fcdd1c63ec8a2b619d636d1043ea7cce8fb8e4a89ceee9e8e1cd84f64140i0",
+    "location": "5c57fcdd1c63ec8a2b619d636d1043ea7cce8fb8e4a89ceee9e8e1cd84f64140i0:0:0",
+    "explorer": "https://ordinals.com/inscription/5c57fcdd1c63ec8a2b619d636d1043ea7cce8fb8e4a89ceee9e8e1cd84f64140i0"
+  }
+]'
