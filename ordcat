@@ -96,7 +96,6 @@ function getText {
     -H "Accept: ${acceptedMediaTypes}" \
     "${contentUrl}"
   setTerminalBoldOutput "false"
-  printf "\n"
 }
 
 # Get yaml inscriptions
